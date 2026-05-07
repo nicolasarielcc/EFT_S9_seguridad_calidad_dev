@@ -1,0 +1,269 @@
+openapi: 3.0.0
+info:
+  title: Pet Adoption Backend API - ZAP Testing (Without Authentication)
+  version: 1.0.0
+  description: |
+    OpenAPI specification for OWASP ZAP security testing.
+    This version tests PUBLIC endpoints of the Backend WITHOUT JWT authentication.
+  contact:
+    name: DUOC UC - CDY2203
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8081
+    description: Development Backend Server
+
+components:
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+          enum: [Macho, Hembra]
+        location:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [available, adopted, unavailable]
+
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        age:
+          type: integer
+        owner:
+          type: string
+
+    InvoiceLineItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [SERVICE, MEDICATION, ADDITIONAL_CHARGE]
+        description:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        lineTotal:
+          type: number
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        appointmentId:
+          type: integer
+        issueDate:
+          type: string
+          format: date
+        vatRate:
+          type: number
+        subtotal:
+          type: number
+        vatAmount:
+          type: number
+        total:
+          type: number
+        notes:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLineItem'
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+  /login:
+    post:
+      summary: Autenticación
+      description: Inicia sesión y obtiene un token JWT
+      operationId: login
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Token JWT obtenido
+          content:
+            application/json:
+              schema:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Login fallido
+
+  /pets:
+    get:
+      summary: Listar todas las mascotas
+      description: Obtiene la lista completa de mascotas registradas
+      operationId: getAllPets
+      tags:
+        - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+
+  /pets/{id}:
+    get:
+      summary: Obtener mascota por ID
+      description: Obtiene información detallada de una mascota específica
+      operationId: getPetById
+      tags:
+        - Mascotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la mascota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mascota encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Mascota no encontrada
+
+  /pets/available:
+    get:
+      summary: Mascotas disponibles
+      description: Obtiene mascotas con status = available
+      operationId: getAvailablePets
+      tags:
+        - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+
+  /pets/search:
+    get:
+      summary: Buscar mascotas
+      description: Busca mascotas por criterios (especie, género, ubicación, edad, status)
+      operationId: searchPets
+      tags:
+        - Mascotas
+      parameters:
+        - name: species
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Especie (Perro, Gato, etc)
+        - name: gender
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Macho
+              - Hembra
+          description: Género
+        - name: location
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Ubicación
+        - name: age
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Edad
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - available
+              - adopted
+              - unavailable
+          description: Status (default = available)
+      responses:
+        '200':
+          description: Resultados de búsqueda
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+
+tags:
+  - name: Autenticación
+    description: Endpoints de login
+  - name: Mascotas
+    description: Operaciones públicas con mascotas

@@ -1,0 +1,336 @@
+openapi: 3.0.0
+info:
+  title: Pet Adoption Frontend API - ZAP Testing (Without Authentication)
+  version: 1.0.0
+  description: |
+    OpenAPI specification for OWASP ZAP security testing.
+    This version tests PUBLIC endpoints WITHOUT JWT authentication.
+  contact:
+    name: DUOC UC - CDY2203
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Development Frontend Server
+
+paths:
+  /:
+    get:
+      summary: Página Principal
+      description: Acceso a la página de inicio del sistema
+      operationId: getHome
+      tags:
+        - Web
+      responses:
+        '200':
+          description: Página de inicio
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /login:
+    get:
+      summary: Formulario de Login
+      description: Obtiene el formulario HTML de autenticación
+      operationId: getLoginForm
+      tags:
+        - Autenticación
+      responses:
+        '200':
+          description: Formulario de login
+          content:
+            text/html:
+              schema:
+                type: string
+
+    post:
+      summary: Procesar Login
+      description: Autentica usuario con credenciales
+      operationId: postLogin
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '302':
+          description: Redirect después de autenticación
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Credenciales inválidas
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /pets:
+    get:
+      summary: Listar Mascotas
+      description: Obtiene la lista de mascotas disponibles
+      operationId: getPets
+      tags:
+        - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /pets/{id}:
+    get:
+      summary: Detalle de Mascota
+      description: Obtiene información de una mascota específica
+      operationId: getPetDetail
+      tags:
+        - Mascotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la mascota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalle de mascota
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          description: Mascota no encontrada
+
+  /api/pets:
+    get:
+      summary: Listar Mascotas (REST)
+      description: Obtiene lista de mascotas en JSON
+      operationId: getApiPets
+      tags:
+        - REST - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+
+  /api/pets/{id}:
+    get:
+      summary: Obtener Mascota por ID (REST)
+      description: Obtiene información de mascota en JSON
+      operationId: getApiPetById
+      tags:
+        - REST - Mascotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mascota encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Mascota no encontrada
+
+  /api/pets/search:
+    get:
+      summary: Buscar Mascotas
+      description: Busca mascotas por criterios sin autenticación
+      operationId: searchPets
+      tags:
+        - REST - Mascotas
+      parameters:
+        - name: species
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Especie (Perro, Gato, etc)
+        - name: gender
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Macho
+              - Hembra
+          description: Género
+        - name: location
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Ubicación
+        - name: age
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Edad
+      responses:
+        '200':
+          description: Resultados de búsqueda
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+
+  /api/auth/login:
+    post:
+      summary: Autenticación REST
+      description: Autentica usuario y retorna token (PUBLIC)
+      operationId: apiLogin
+      tags:
+        - REST - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Token generado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Max
+        species:
+          type: string
+          example: Perro
+        breed:
+          type: string
+          example: Golden Retriever
+        age:
+          type: integer
+          example: 3
+        gender:
+          type: string
+          enum:
+            - Macho
+            - Hembra
+          example: Macho
+        location:
+          type: string
+          example: Santiago
+        photos:
+          type: array
+          items:
+            type: string
+            format: uri
+        status:
+          type: string
+          enum:
+            - available
+            - adopted
+            - unavailable
+          default: available
+
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        age:
+          type: integer
+        owner:
+          type: string
+
+    AuthRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          format: password
+          example: password123
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        username:
+          type: string
+          example: admin
+        expiresIn:
+          type: integer
+          example: 3600
+
+tags:
+  - name: Web
+    description: Endpoints MVC que retornan HTML
+  - name: Autenticación
+    description: Endpoints de login y autenticación
+  - name: Mascotas
+    description: Operaciones con mascotas
+  - name: REST - Mascotas
+    description: API REST para mascotas
+  - name: REST - Autenticación
+    description: API REST para autenticación
+

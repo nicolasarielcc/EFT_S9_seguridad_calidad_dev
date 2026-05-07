@@ -1,0 +1,530 @@
+openapi: 3.0.0
+
+info:
+  title: Pet Adoption Backend API - ZAP Testing (With JWT Authentication)
+  version: 1.0.0
+  description: |
+    OpenAPI specification for OWASP ZAP security testing.
+    This version includes all endpoints with JWT Bearer Token authentication for protected resources.
+  contact:
+    name: DUOC UC - CDY2203
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8081
+    description: Development Backend Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+          enum: [Macho, Hembra]
+        location:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [available, adopted, unavailable]
+
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        age:
+          type: integer
+        owner:
+          type: string
+
+    InvoiceLineItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [SERVICE, MEDICATION, ADDITIONAL_CHARGE]
+        description:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        lineTotal:
+          type: number
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        appointmentId:
+          type: integer
+        issueDate:
+          type: string
+          format: date
+        vatRate:
+          type: number
+        subtotal:
+          type: number
+        vatAmount:
+          type: number
+        total:
+          type: number
+        notes:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLineItem'
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+  /login:
+    post:
+      summary: Autenticar usuario (PUBLIC)
+      description: Inicia sesión y obtiene un token JWT
+      tags: 
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Token JWT generado
+          content:
+            application/json:
+              schema:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Credenciales inválidas
+
+  /users/register:
+    post:
+      summary: Registrar nuevo usuario
+      description: Crea un usuario (requiere JWT válido)
+      tags:
+        - Autenticación
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: Usuario registrado
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autorizado
+
+  /pets:
+    get:
+      summary: Obtener todas las mascotas (PUBLIC)
+      tags:
+        - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+
+    post:
+      summary: Crear nueva mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '201':
+          description: Mascota creada
+        '401':
+          description: No autorizado
+
+  /pets/{id}:
+    get:
+      summary: Obtener mascota por ID (PUBLIC)
+      tags:
+        - Mascotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mascota encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Mascota no encontrada
+
+    put:
+      summary: Actualizar mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: Mascota actualizada
+        '401':
+          description: No autorizado
+
+    delete:
+      summary: Eliminar mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mascota eliminada
+        '401':
+          description: No autorizado
+
+  /pets/available:
+    get:
+      summary: Obtener mascotas disponibles (PUBLIC)
+      tags:
+        - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas disponibles
+
+  /pets/search:
+    get:
+      summary: Buscar mascotas por criterios (PUBLIC)
+      tags:
+        - Mascotas
+      parameters:
+        - name: species
+          in: query
+          schema:
+            type: string
+        - name: gender
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: age
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultados de búsqueda
+
+  /patients:
+    get:
+      summary: Obtener todos los pacientes
+      tags:
+        - Pacientes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de pacientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+        '401':
+          description: No autorizado
+
+    post:
+      summary: Crear nuevo paciente
+      tags:
+        - Pacientes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+      responses:
+        '201':
+          description: Paciente creado
+        '401':
+          description: No autorizado
+
+  /patients/{id}:
+    get:
+      summary: Obtener paciente por ID
+      tags:
+        - Pacientes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paciente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '401':
+          description: No autorizado
+        '404':
+          description: Paciente no encontrado
+
+  /invoices:
+    get:
+      summary: Obtener todas las facturas
+      tags:
+        - Facturas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de facturas
+        '401':
+          description: No autorizado
+
+  /invoices/{id}:
+    get:
+      summary: Obtener factura por ID
+      tags:
+        - Facturas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Factura encontrada
+        '401':
+          description: No autorizado
+        '404':
+          description: Factura no encontrada
+
+  /invoices/appointment/{appointmentId}:
+    get:
+      summary: Obtener factura por visita
+      tags:
+        - Facturas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Factura encontrada
+        '401':
+          description: No autorizado
+        '404':
+          description: Factura no encontrada
+
+  /invoices/appointments/{appointmentId}:
+    post:
+      summary: Generar factura de visita
+      tags:
+        - Facturas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issueDate:
+                  type: string
+                  format: date
+                vatRate:
+                  type: number
+                notes:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/InvoiceLineItem'
+      responses:
+        '201':
+          description: Factura generada
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autorizado
+        '409':
+          description: Factura ya existe
+
+tags:
+  - name: Autenticación
+    description: Endpoints de autenticación
+  - name: Mascotas
+    description: Operaciones con mascotas
+  - name: Pacientes
+    description: Operaciones con pacientes
+  - name: Facturas
+    description: Operaciones con facturas
+            type: integer
+      responses:
+        '200':
+          description: Factura encontrada
+        '401':
+          description: No autorizado
+        '404':
+          description: Factura no encontrada
+
+  /invoices/appointments/{appointmentId}:
+    post:
+      tags: [Facturas]
+      summary: Generar factura de visita
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issueDate:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/InvoiceLineItem'
+      responses:
+        '201':
+          description: Factura generada
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autorizado
+        '409':
+          description: Factura ya existe
+
+tags:
+  - name: Autenticación
+  - name: Mascotas
+  - name: Pacientes
+  - name: Facturas

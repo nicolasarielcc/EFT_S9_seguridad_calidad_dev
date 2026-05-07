@@ -1,0 +1,717 @@
+openapi: 3.0.0
+info:
+  title: Pet Adoption Frontend API - ZAP Testing (With JWT Authentication)
+  version: 1.0.0
+  description: |
+    OpenAPI specification for OWASP ZAP security testing.
+    This version includes JWT Bearer Token authentication for protected endpoints.
+  contact:
+    name: DUOC UC - CDY2203
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Development Frontend Server
+
+paths:
+  /:
+    get:
+      summary: Página Principal
+      tags:
+        - Web
+      responses:
+        '200':
+          description: Página de inicio
+
+  /login:
+    get:
+      summary: Formulario de Login
+      tags:
+        - Autenticación
+      responses:
+        '200':
+          description: Formulario de login
+
+    post:
+      summary: Procesar Login
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '302':
+          description: Redirect después de autenticación
+        '400':
+          description: Credenciales inválidas
+
+  /logout:
+    get:
+      summary: Cerrar Sesión
+      tags:
+        - Autenticación
+      security:
+        - bearerAuth: []
+      responses:
+        '302':
+          description: Redirect a /login
+        '401':
+          description: No autenticado
+
+  /pets:
+    get:
+      summary: Listar Mascotas
+      tags:
+        - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas
+
+    post:
+      summary: Crear Mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                species:
+                  type: string
+                breed:
+                  type: string
+                age:
+                  type: integer
+                gender:
+                  type: string
+      responses:
+        '302':
+          description: Redirect a /pets
+        '401':
+          description: No autenticado
+
+  /pets/{id}:
+    get:
+      summary: Detalle de Mascota
+      tags:
+        - Mascotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalle de mascota
+        '404':
+          description: No encontrada
+
+    put:
+      summary: Actualizar Mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+      responses:
+        '302':
+          description: Actualizado
+        '401':
+          description: No autenticado
+
+    delete:
+      summary: Eliminar Mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '302':
+          description: Eliminada
+        '401':
+          description: No autenticado
+
+  /pets/create:
+    get:
+      summary: Formulario Crear Mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Formulario
+        '401':
+          description: No autenticado
+
+  /pets/{id}/edit:
+    get:
+      summary: Formulario Editar Mascota
+      tags:
+        - Mascotas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Formulario
+        '401':
+          description: No autenticado
+
+  /patients:
+    get:
+      summary: Listar Pacientes
+      tags:
+        - Pacientes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de pacientes
+        '401':
+          description: No autenticado
+
+    post:
+      summary: Crear Paciente
+      tags:
+        - Pacientes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+      responses:
+        '302':
+          description: Creado
+        '401':
+          description: No autenticado
+
+  /patients/{id}:
+    get:
+      summary: Detalle de Paciente
+      tags:
+        - Pacientes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalle
+        '401':
+          description: No autenticado
+
+  /patients/create:
+    get:
+      summary: Formulario Crear Paciente
+      tags:
+        - Pacientes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Formulario
+        '401':
+          description: No autenticado
+
+  /invoices:
+    get:
+      summary: Listar Facturas
+      tags:
+        - Facturas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de facturas
+        '401':
+          description: No autenticado
+
+  /invoices/{id}:
+    get:
+      summary: Detalle de Factura
+      tags:
+        - Facturas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalle
+        '401':
+          description: No autenticado
+
+  /api/auth/login:
+    post:
+      summary: Autenticación REST (PUBLIC)
+      tags:
+        - REST - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Token generado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenciales inválidas
+
+  /api/pets:
+    get:
+      summary: Listar Mascotas (REST - PUBLIC)
+      tags:
+        - REST - Mascotas
+      responses:
+        '200':
+          description: Lista de mascotas
+
+    post:
+      summary: Crear Mascota (REST)
+      tags:
+        - REST - Mascotas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '201':
+          description: Creada
+        '401':
+          description: No autenticado
+
+  /api/pets/{id}:
+    get:
+      summary: Obtener Mascota por ID (REST - PUBLIC)
+      tags:
+        - REST - Mascotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mascota encontrada
+        '404':
+          description: No encontrada
+
+    put:
+      summary: Actualizar Mascota (REST)
+      tags:
+        - REST - Mascotas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: Actualizada
+        '401':
+          description: No autenticado
+
+    delete:
+      summary: Eliminar Mascota (REST)
+      tags:
+        - REST - Mascotas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Eliminada
+        '401':
+          description: No autenticado
+
+  /api/pets/search:
+    get:
+      summary: Buscar Mascotas (PUBLIC)
+      tags:
+        - REST - Mascotas
+      parameters:
+        - name: species
+          in: query
+          schema:
+            type: string
+        - name: gender
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: age
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Resultados
+
+  /api/patients:
+    get:
+      summary: Listar Pacientes (REST)
+      tags:
+        - REST - Pacientes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista
+        '401':
+          description: No autenticado
+
+    post:
+      summary: Crear Paciente (REST)
+      tags:
+        - REST - Pacientes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+      responses:
+        '201':
+          description: Creado
+        '401':
+          description: No autenticado
+
+  /api/patients/{id}:
+    get:
+      summary: Obtener Paciente (REST)
+      tags:
+        - REST - Pacientes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paciente
+        '401':
+          description: No autenticado
+
+  /api/appointments:
+    get:
+      summary: Listar Citas (REST)
+      tags:
+        - REST - Citas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista
+        '401':
+          description: No autenticado
+
+    post:
+      summary: Crear Cita (REST)
+      tags:
+        - REST - Citas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+      responses:
+        '201':
+          description: Creada
+        '401':
+          description: No autenticado
+
+  /api/appointments/{id}:
+    get:
+      summary: Obtener Cita (REST)
+      tags:
+        - REST - Citas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cita
+        '401':
+          description: No autenticado
+
+    put:
+      summary: Actualizar Cita (REST)
+      tags:
+        - REST - Citas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+      responses:
+        '200':
+          description: Actualizada
+        '401':
+          description: No autenticado
+
+    delete:
+      summary: Eliminar Cita (REST)
+      tags:
+        - REST - Citas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Eliminada
+        '401':
+          description: No autenticado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer Token obtenido de /api/auth/login
+
+  schemas:
+    Pet:
+      type: object
+      required:
+        - name
+        - species
+        - breed
+        - age
+        - gender
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Max
+        species:
+          type: string
+          example: Perro
+        breed:
+          type: string
+          example: Golden Retriever
+        age:
+          type: integer
+          example: 3
+        gender:
+          type: string
+          enum:
+            - Macho
+            - Hembra
+          example: Macho
+        location:
+          type: string
+          example: Santiago
+        photos:
+          type: array
+          items:
+            type: string
+            format: uri
+        status:
+          type: string
+          enum:
+            - available
+            - adopted
+            - unavailable
+          default: available
+
+    Patient:
+      type: object
+      required:
+        - name
+        - species
+        - breed
+        - age
+        - owner
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        age:
+          type: integer
+        owner:
+          type: string
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: integer
+        patientId:
+          type: integer
+        appointmentDate:
+          type: string
+          format: date-time
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - scheduled
+            - completed
+            - cancelled
+
+    AuthRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          format: password
+          example: password123
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        username:
+          type: string
+          example: admin
+        expiresIn:
+          type: integer
+          example: 3600
+
+tags:
+  - name: Web
+    description: Endpoints MVC que retornan HTML
+  - name: Autenticación
+    description: Endpoints de login y logout
+  - name: Mascotas
+    description: Operaciones con mascotas (Web)
+  - name: Pacientes
+    description: Operaciones con pacientes (Web)
+  - name: Facturas
+    description: Operaciones con facturas (Web)
+  - name: REST - Autenticación
+    description: API REST para autenticación
+  - name: REST - Mascotas
+    description: API REST para mascotas
+  - name: REST - Pacientes
+    description: API REST para pacientes
+  - name: REST - Citas
+    description: API REST para citas
+
