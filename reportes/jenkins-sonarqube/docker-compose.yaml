@@ -9,7 +9,7 @@ services:
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
-    restart: always
+    restart: no
     ports:
       - "8082:8080"
       - "50000:50000"
@@ -21,13 +21,11 @@ services:
     environment:
       - JENKINS_OPTS=--prefix=/jenkins
       - JENKINS_SLAVE_AGENT_PORT=50000
-    depends_on:
-      - backend
 
   sonarqube:
     image: sonarqube:lts
     container_name: sonarqube
-    restart: always
+    restart: no
     ports:
       - "9000:9000"
     volumes:
@@ -38,5 +36,3 @@ services:
       - syc_net
     environment:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-    depends_on:
-      - backend

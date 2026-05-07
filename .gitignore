@@ -56,3 +56,6 @@ jacoco.exec
 # IDE cache
 .cache/
 .vscode-server/
+
+**/reportes/** 
+docker-compose.yaml
