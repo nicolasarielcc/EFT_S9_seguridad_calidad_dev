@@ -5,7 +5,7 @@ info:
   version: 1.0.0
   description: |
     OpenAPI specification for OWASP ZAP security testing.
-    This version includes all endpoints with JWT Bearer Token authentication for protected resources.
+    This version incluye todos los endpoints con autenticación JWT.
   contact:
     name: DUOC UC - CDY2203
   license:
@@ -21,7 +21,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
   schemas:
     Pet:
       type: object
@@ -48,7 +47,6 @@ components:
         status:
           type: string
           enum: [available, adopted, unavailable]
-
     Patient:
       type: object
       properties:
@@ -64,7 +62,6 @@ components:
           type: integer
         owner:
           type: string
-
     InvoiceLineItem:
       type: object
       properties:
@@ -81,7 +78,6 @@ components:
           type: number
         lineTotal:
           type: number
-
     Invoice:
       type: object
       properties:
@@ -106,7 +102,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvoiceLineItem'
-
     LoginRequest:
       type: object
       properties:
@@ -114,7 +109,6 @@ components:
           type: string
         password:
           type: string
-
     UserRegistration:
       type: object
       properties:
@@ -124,7 +118,6 @@ components:
           type: string
         password:
           type: string
-
     Error:
       type: object
       properties:
@@ -191,7 +184,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Pet'
-
     post:
       summary: Crear nueva mascota
       tags:
@@ -230,7 +222,6 @@ paths:
                 $ref: '#/components/schemas/Pet'
         '404':
           description: Mascota no encontrada
-
     put:
       summary: Actualizar mascota
       tags:
@@ -254,7 +245,6 @@ paths:
           description: Mascota actualizada
         '401':
           description: No autorizado
-
     delete:
       summary: Eliminar mascota
       tags:
@@ -330,7 +320,6 @@ paths:
                   $ref: '#/components/schemas/Patient'
         '401':
           description: No autorizado
-
     post:
       summary: Crear nuevo paciente
       tags:
@@ -479,52 +468,3 @@ tags:
     description: Operaciones con pacientes
   - name: Facturas
     description: Operaciones con facturas
-            type: integer
-      responses:
-        '200':
-          description: Factura encontrada
-        '401':
-          description: No autorizado
-        '404':
-          description: Factura no encontrada
-
-  /invoices/appointments/{appointmentId}:
-    post:
-      tags: [Facturas]
-      summary: Generar factura de visita
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: appointmentId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                issueDate:
-                  type: string
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/InvoiceLineItem'
-      responses:
-        '201':
-          description: Factura generada
-        '400':
-          description: Datos inválidos
-        '401':
-          description: No autorizado
-        '409':
-          description: Factura ya existe
-
-tags:
-  - name: Autenticación
-  - name: Mascotas
-  - name: Pacientes
-  - name: Facturas

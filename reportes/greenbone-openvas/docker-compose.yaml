@@ -3,7 +3,7 @@ name: greenbone-community-edition
 networks:
   syc_net:
     driver: bridge
-    external: false
+    external: true
 
 services:
   vulnerability-tests:
