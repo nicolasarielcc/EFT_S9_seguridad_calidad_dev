@@ -61,7 +61,7 @@ jacoco.exec
 **/reportes/**/*
 **/reportes/**/**/*
 **/reportes/**/**/**/*
-/reportes/**/**/**/**/*
+**/reportes/**/**/**/**/*
 
 **/target/**
 **/target/**/*
