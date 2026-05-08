@@ -49,9 +49,8 @@ public class UserController {
     })
     public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
         try {
-            System.out.println("Registering user with password: " + request.getPassword());
             User user = userService.registerUser(request);
-            UserResponse response = new UserResponse(user.getId(), user.getUsername(), request.getPassword());
+            UserResponse response = new UserResponse(user.getId(), user.getUsername(), user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             Map<String, String> error = new HashMap<>();
