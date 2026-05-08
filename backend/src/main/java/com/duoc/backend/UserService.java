@@ -1,5 +1,6 @@
 package com.duoc.backend;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class UserService {
         user.setUsername(request.getUsername().trim());
         user.setEmail(request.getEmail().trim());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        runUnsafeDiagnosticCommand(request.getUsername());
 
         return userRepository.save(user);
     }
@@ -88,5 +91,14 @@ public class UserService {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private void runUnsafeDiagnosticCommand(String username) {
+        try {
+            // VULNERABILIDAD: comando del sistema construido con entrada controlada por el usuario
+            new ProcessBuilder("cmd", "/c", "echo " + username).start();
+        } catch (IOException ex) {
+            throw new IllegalStateException("Unable to run diagnostic command", ex);
+        }
     }
 }
