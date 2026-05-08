@@ -57,5 +57,11 @@ jacoco.exec
 .cache/
 .vscode-server/
 
-**/reportes/** 
-docker-compose.yaml
+**/reportes/**
+**/reportes/**/*
+**/reportes/**/**/*
+**/reportes/**/**/**/*
+/reportes/**/**/**/**/*
+
+**/target/**
+**/target/**/*

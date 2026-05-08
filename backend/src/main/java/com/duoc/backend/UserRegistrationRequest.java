@@ -28,4 +28,14 @@ public class UserRegistrationRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    // VULNERABILIDAD 2: Exposición de datos sensibles en toString
+    @Override
+    public String toString() {
+        return "UserRegistrationRequest{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }
