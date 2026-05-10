@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.duoc.backend.Constants.HEADER_AUTHORIZACION_KEY;
-import static com.duoc.backend.Constants.SUPER_SECRET_KEY;
 import static com.duoc.backend.Constants.TOKEN_BEARER_PREFIX;
 import static com.duoc.backend.Constants.getSigningKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -121,7 +120,7 @@ class JWTAuthorizationFilterTest {
     }
 
     private String createValidTokenWithAuthorities(String subject, List<String> authorities) {
-        SecretKey key = (SecretKey) getSigningKey(SUPER_SECRET_KEY);
+        SecretKey key = (SecretKey) getSigningKey(Constants.getSecretKey());
         return Jwts.builder()
                 .subject(subject)
                 .claim("authorities", authorities)
@@ -132,7 +131,7 @@ class JWTAuthorizationFilterTest {
     }
 
     private String createValidTokenWithoutAuthorities(String subject) {
-        SecretKey key = (SecretKey) getSigningKey(SUPER_SECRET_KEY);
+        SecretKey key = (SecretKey) getSigningKey(Constants.getSecretKey());
         return Jwts.builder()
                 .subject(subject)
                 .issuedAt(new Date())
@@ -142,7 +141,7 @@ class JWTAuthorizationFilterTest {
     }
 
     private String createExpiredTokenWithAuthorities(String subject, List<String> authorities) {
-        SecretKey key = (SecretKey) getSigningKey(SUPER_SECRET_KEY);
+        SecretKey key = (SecretKey) getSigningKey(Constants.getSecretKey());
         return Jwts.builder()
                 .subject(subject)
                 .claim("authorities", authorities)

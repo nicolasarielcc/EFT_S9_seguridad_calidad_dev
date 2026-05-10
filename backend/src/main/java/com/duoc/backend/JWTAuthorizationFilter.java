@@ -28,7 +28,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
                 replace(TOKEN_BEARER_PREFIX, "");
 
                 return Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey(SUPER_SECRET_KEY))
+                .verifyWith((SecretKey) getSigningKey(Constants.getSecretKey()))
                 .build()
                 .parseSignedClaims(jwtToken)
                 .getPayload();
@@ -37,6 +37,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private void setAuthentication(Claims claims) {
 
+        @SuppressWarnings("unchecked")
         List<String> authorities = (List<String>) claims.get("authorities");
 
         UsernamePasswordAuthenticationToken auth =

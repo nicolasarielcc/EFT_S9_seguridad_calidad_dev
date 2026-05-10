@@ -70,4 +70,22 @@ class JwtCookieServiceTests {
 
         assertNull(service.extractToken(request));
     }
+
+    @Test
+    void extractTokenShouldReturnNullWhenCookiesExistButNoneMatch() {
+        JwtCookieService service = new JwtCookieService(true, 3600, "Strict");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setCookies(new Cookie("SOME_OTHER_COOKIE", "value"));
+
+        assertNull(service.extractToken(request));
+    }
+
+    @Test
+    void extractTokenShouldReturnNullWhenAuthHeaderPresentButNotBearer() {
+        JwtCookieService service = new JwtCookieService(true, 3600, "Strict");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Basic dXNlcjpwYXNz");
+
+        assertNull(service.extractToken(request));
+    }
 }

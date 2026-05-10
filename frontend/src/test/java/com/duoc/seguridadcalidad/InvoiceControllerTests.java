@@ -3,7 +3,7 @@ package com.duoc.seguridadcalidad;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -174,6 +174,49 @@ class InvoiceControllerTests {
                   .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.message").value("El backend de facturación no está disponible"));
+                }
+
+                @Test
+                void getByIdShouldPropagateBackendHttpStatus() throws Exception {
+              HttpClientErrorException ex = HttpClientErrorException.create(
+                HttpStatus.NOT_FOUND,
+                "Not Found",
+                HttpHeaders.EMPTY,
+                "not found".getBytes(StandardCharsets.UTF_8),
+                StandardCharsets.UTF_8
+              );
+              when(backendService.getInvoiceById("valid-token", 1L)).thenThrow(ex);
+
+              mockMvc.perform(get("/api/invoices/1")
+                  .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isNotFound());
+                }
+
+                @Test
+                void getByAppointmentShouldReturnServiceUnavailableWhenBackendDown() throws Exception {
+              when(backendService.getInvoiceByAppointmentId("valid-token", 10L))
+                .thenThrow(new ResourceAccessException("down"));
+
+              mockMvc.perform(get("/api/invoices/appointment/10")
+                  .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.message").value("El backend de facturación no está disponible"));
+                }
+
+                @Test
+                void getByAppointmentShouldPropagateBackendHttpStatus() throws Exception {
+              HttpClientErrorException ex = HttpClientErrorException.create(
+                HttpStatus.NOT_FOUND,
+                "Not Found",
+                HttpHeaders.EMPTY,
+                "not found".getBytes(StandardCharsets.UTF_8),
+                StandardCharsets.UTF_8
+              );
+              when(backendService.getInvoiceByAppointmentId("valid-token", 10L)).thenThrow(ex);
+
+              mockMvc.perform(get("/api/invoices/appointment/10")
+                  .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isNotFound());
                 }
 
                 @Test

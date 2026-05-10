@@ -113,6 +113,16 @@ class PetControllerTest {
     }
 
     @Test
+    void getAvailablePetsShouldReturnInternalServerErrorWhenRepositoryFails() {
+        when(petRepository.findByStatus("available")).thenThrow(new RuntimeException("DB down"));
+
+        ResponseEntity<List<Pet>> response = petController.getAvailablePets();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     void getPetByIdShouldReturnOkWhenFound() {
         Pet pet = new Pet();
         pet.setId(10);
@@ -131,6 +141,16 @@ class PetControllerTest {
         ResponseEntity<Pet> response = petController.getPetById(99);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void getPetByIdShouldReturnInternalServerErrorWhenRepositoryFails() {
+        when(petRepository.findById(99)).thenThrow(new RuntimeException("DB down"));
+
+        ResponseEntity<Pet> response = petController.getPetById(99);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
     }
 

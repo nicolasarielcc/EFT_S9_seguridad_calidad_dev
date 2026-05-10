@@ -4,8 +4,8 @@ import com.duoc.testsupport.TestSecurityEndpointsController;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.duoc.backend.Constants.HEADER_AUTHORIZACION_KEY;
-import static com.duoc.backend.Constants.SUPER_SECRET_KEY;
 import static com.duoc.backend.Constants.TOKEN_BEARER_PREFIX;
 import static com.duoc.backend.Constants.getSigningKey;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -89,7 +88,7 @@ class WebSecurityConfigTest {
                 .claim("authorities", authorities)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 60_000))
-                .signWith(getSigningKey(SUPER_SECRET_KEY))
+                .signWith(getSigningKey(Constants.getSecretKey()))
                 .compact();
     }
 }

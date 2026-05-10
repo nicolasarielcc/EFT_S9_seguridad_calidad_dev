@@ -60,6 +60,20 @@ class UserServiceTest {
     }
 
     @Test
+    void registerUserShouldThrowWhenEmailAlreadyExists() {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setUsername("carlos");
+        request.setEmail("carlos@duoc.cl");
+        request.setPassword("secret");
+
+        when(userRepository.existsByUsername("carlos")).thenReturn(false);
+        when(userRepository.existsByEmail("carlos@duoc.cl")).thenReturn(true);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
+        assertEquals("Email already exists", ex.getMessage());
+    }
+
+    @Test
     void registerUserShouldTrimAndEncodePasswordAndSave() {
         UserRegistrationRequest request = new UserRegistrationRequest();
         request.setUsername("  carlos ");
@@ -122,6 +136,27 @@ class UserServiceTest {
         assertTrue(userService.authenticate("carlos", "secret"));
         assertEquals("$2a$10$hashed", user.getPassword());
         verify(userRepository).save(user);
+    }
+
+    @Test
+    void authenticateShouldReturnFalseWhenPlainPasswordDoesNotMatch() {
+        User user = new User();
+        user.setUsername("carlos");
+        user.setPassword("secret");
+        when(userRepository.findByUsername("carlos")).thenReturn(user);
+
+        assertFalse(userService.authenticate("carlos", "wrong"));
+        verify(userRepository, never()).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void authenticateShouldReturnFalseWhenStoredPasswordBlank() {
+        User user = new User();
+        user.setUsername("carlos");
+        user.setPassword("  ");
+        when(userRepository.findByUsername("carlos")).thenReturn(user);
+
+        assertFalse(userService.authenticate("carlos", "secret"));
     }
 
     @Test

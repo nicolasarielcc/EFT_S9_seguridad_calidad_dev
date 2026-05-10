@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.duoc.backend.Constants.*;
+import static com.duoc.backend.Constants.getSigningKey;
 @Configuration
 public class JWTAuthenticationConfig {
 
@@ -33,7 +33,7 @@ public class JWTAuthenticationConfig {
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1440))
                 .and()
-                .signWith(getSigningKey(SUPER_SECRET_KEY))
+                .signWith(getSigningKey(Constants.getSecretKey()))
                 .compact();
 
         return "Bearer " + token;

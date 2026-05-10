@@ -33,4 +33,19 @@ class AppointmentTest {
         assertEquals(2, appointment.getPatientId());
         assertEquals("X", appointment.getReason());
     }
+
+    @Test
+    void setDateSetTimeSetVeterinarianShouldWork() {
+        Appointment appointment = new Appointment();
+        LocalDate date = LocalDate.of(2026, 6, 1);
+        LocalTime time = LocalTime.of(9, 0);
+
+        appointment.setDate(date);
+        appointment.setTime(time);
+        appointment.setVeterinarian("Dr. Smith");
+
+        assertEquals(date, appointment.getDate());
+        assertEquals(time, appointment.getTime());
+        assertEquals("Dr. Smith", appointment.getVeterinarian());
+    }
 }

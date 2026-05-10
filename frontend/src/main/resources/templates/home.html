@@ -27,7 +27,14 @@
     <script src="/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-            if (await hasAuthSession()) {
+            let authenticated = false;
+            try {
+                authenticated = await hasAuthSession();
+            } catch (_) {
+                authenticated = false;
+            }
+
+            if (authenticated) {
                 document.getElementById('btnPatients').style.display = 'inline-block';
                 document.getElementById('btnAppointments').style.display = 'inline-block';
                 document.getElementById('btnPets').style.display = 'inline-block';

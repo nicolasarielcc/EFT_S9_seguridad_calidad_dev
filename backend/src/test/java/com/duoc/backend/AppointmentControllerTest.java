@@ -88,6 +88,16 @@ class AppointmentControllerTest {
     }
 
     @Test
+    void getAllAppointmentsShouldReturnInternalServerErrorWhenRepositoryFails() {
+        when(appointmentRepository.findAll()).thenThrow(new RuntimeException("DB down"));
+
+        ResponseEntity<Iterable<Appointment>> response = appointmentController.getAllAppointments();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     void getAppointmentByIdShouldReturnOkWhenFound() {
         Appointment appointment = new Appointment();
         appointment.setId(5);
@@ -110,12 +120,44 @@ class AppointmentControllerTest {
     }
 
     @Test
+    void getAppointmentByIdShouldReturnInternalServerErrorWhenRepositoryFails() {
+        when(appointmentRepository.findById(5)).thenThrow(new RuntimeException("DB down"));
+
+        ResponseEntity<Appointment> response = appointmentController.getAppointmentById(5);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     void getAppointmentsForPatientShouldReturnNotFoundWhenPatientMissing() {
         when(patientRepository.existsById(10)).thenReturn(false);
 
         ResponseEntity<List<Appointment>> response = appointmentController.getAppointmentsForPatient(10);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void getAppointmentsForPatientShouldReturnOkWhenPatientExists() {
+        List<Appointment> appointments = List.of(new Appointment());
+        when(patientRepository.existsById(10)).thenReturn(true);
+        when(appointmentRepository.findByPatientId(10)).thenReturn(appointments);
+
+        ResponseEntity<List<Appointment>> response = appointmentController.getAppointmentsForPatient(10);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(appointments, response.getBody());
+    }
+
+    @Test
+    void getAppointmentsForPatientShouldReturnInternalServerErrorWhenRepositoryFails() {
+        when(patientRepository.existsById(10)).thenReturn(true);
+        when(appointmentRepository.findByPatientId(10)).thenThrow(new RuntimeException("DB down"));
+
+        ResponseEntity<List<Appointment>> response = appointmentController.getAppointmentsForPatient(10);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
@@ -162,6 +204,26 @@ class AppointmentControllerTest {
         ResponseEntity<String> response = appointmentController.deleteAppointment(1);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void updateAppointmentShouldReturnBadRequestWhenExceptionOccurs() {
+        when(appointmentRepository.existsById(1)).thenThrow(new RuntimeException("DB down"));
+
+        ResponseEntity<String> response = appointmentController.updateAppointment(1, new Appointment());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void deleteAppointmentShouldReturnInternalServerErrorWhenDeleteFails() {
+        when(appointmentRepository.existsById(1)).thenReturn(true);
+        org.mockito.Mockito.doThrow(new RuntimeException("DB down"))
+                .when(appointmentRepository).deleteById(1);
+
+        ResponseEntity<String> response = appointmentController.deleteAppointment(1);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test

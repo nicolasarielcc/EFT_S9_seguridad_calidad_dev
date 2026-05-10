@@ -18,15 +18,13 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // VULNERABILIDAD 1: contraseña hardcodeada en el login
-            String hardcodedPassword = "Admin1234!";
-            if (!hardcodedPassword.equals(loginRequest.getPassword())) {
+            boolean authenticated = userService.authenticate(
+                    loginRequest.getUsername(), loginRequest.getPassword());
+            if (!authenticated) {
                 return ResponseEntity.badRequest().body("Invalid credentials");
             }
-
-            // VULNERABILIDAD 2: token predecible y hardcodeado devuelto al cliente
-            String hardcodedToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX1VTRVIifQ.signature";
-            return ResponseEntity.ok(hardcodedToken);
+            String token = jwtAuthenticationConfig.getJWTToken(loginRequest.getUsername());
+            return ResponseEntity.ok(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
         }
