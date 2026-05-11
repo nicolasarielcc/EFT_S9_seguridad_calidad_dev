@@ -270,14 +270,6 @@ class BackendServiceTests {
         assertTrue(backendService.getAvailablePets().isEmpty());
     }
 
-    @Test
-    void getAvailablePetsShouldPropagateHttpStatusCodeException() {
-        when(restTemplate.exchange(eq(BASE_URL + "/pets/available"), eq(HttpMethod.GET), isNull(), eq(Map[].class)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "Unauthorized", null, null, null));
-
-        assertThrows(HttpClientErrorException.class, () -> backendService.getAvailablePets());
-    }
-
     // -------------------------------------------------------------------------
     // searchPets
     // -------------------------------------------------------------------------

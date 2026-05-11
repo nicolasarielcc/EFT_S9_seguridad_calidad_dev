@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.SecretKey;
 import java.util.List;
 
+import static com.duoc.backend.Constants.SUPER_SECRET_KEY;
 import static com.duoc.backend.Constants.TOKEN_BEARER_PREFIX;
 import static com.duoc.backend.Constants.getSigningKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +25,7 @@ class JWTAuthenticationConfigTest {
         assertTrue(bearer.startsWith(TOKEN_BEARER_PREFIX));
 
         String token = bearer.substring(TOKEN_BEARER_PREFIX.length());
-        SecretKey key = (SecretKey) getSigningKey(Constants.getSecretKey());
+        SecretKey key = (SecretKey) getSigningKey(SUPER_SECRET_KEY);
         Claims claims = Jwts.parser()
             .verifyWith(key)
                 .build()

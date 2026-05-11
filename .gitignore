@@ -3,6 +3,8 @@
 .env.local
 .env.*.local
 
+**/.*.github
+
 # Maven
 target/
 pom.xml.tag
@@ -57,6 +59,7 @@ jacoco.exec
 .cache/
 .vscode-server/
 
+/reportes/
 **/reportes/**
 **/reportes/**/*
 **/reportes/**/**/*

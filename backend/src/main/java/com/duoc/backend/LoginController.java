@@ -18,11 +18,10 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
-            boolean authenticated = userService.authenticate(
-                    loginRequest.getUsername(), loginRequest.getPassword());
-            if (!authenticated) {
+            if (!userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
                 return ResponseEntity.badRequest().body("Invalid credentials");
             }
+
             String token = jwtAuthenticationConfig.getJWTToken(loginRequest.getUsername());
             return ResponseEntity.ok(token);
         } catch (Exception e) {

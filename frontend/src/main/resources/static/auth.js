@@ -23,15 +23,11 @@
     }
 
     async function hasAuthSession() {
-        try {
-            const response = await apiFetch('/api/auth/session', {
-                cache: 'no-store',
-                skipAuthRedirect: true
-            });
-            return response.ok;
-        } catch (_) {
-            return false;
-        }
+        const response = await apiFetch('/api/auth/session', {
+            cache: 'no-store',
+            skipAuthRedirect: true
+        });
+        return response.ok;
     }
 
     async function logout() {

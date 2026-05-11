@@ -4,7 +4,7 @@ Documentación técnica de los servicios disponibles en la API de gestión de ma
 
 ## Información General
 
-- **Base URL**: `http://localhost:8081` (desarrollo) | `https://api.example.com` (producción)
+- **Base URL**: `http://localhost:8080` (desarrollo) | `https://api.example.com` (producción)
 - **Versión API**: 1.0.0
 - **Autenticación**: JWT Bearer Token
 - **Content-Type**: `application/json`
@@ -704,4 +704,4 @@ Una vez que el servidor está corriendo, puedes acceder a:
 
 Generado para: DUOC UC - CDY2203
 Versión: 1.0.0
-Fecha: 2026-05-06
+Fecha: 2026-03-28

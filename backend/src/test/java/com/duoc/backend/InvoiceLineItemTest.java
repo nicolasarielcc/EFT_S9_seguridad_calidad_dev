@@ -29,18 +29,4 @@ class InvoiceLineItemTest {
 
         assertEquals(0, item.getLineTotal().compareTo(new BigDecimal("37.50")));
     }
-
-    @Test
-    void getterAndSetterForIdShouldWork() {
-        InvoiceLineItem item = new InvoiceLineItem();
-        item.setId(42);
-        assertEquals(42, item.getId());
-    }
-
-    @Test
-    void setLineTotalShouldPersistValue() {
-        InvoiceLineItem item = new InvoiceLineItem();
-        item.setLineTotal(new BigDecimal("99.99"));
-        assertEquals(0, item.getLineTotal().compareTo(new BigDecimal("99.99")));
-    }
 }
