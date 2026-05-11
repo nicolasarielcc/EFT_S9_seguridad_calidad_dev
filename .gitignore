@@ -1,7 +1,15 @@
-# Environment variables
+# Environment variables and sensitive files
 .env
 .env.local
 .env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+.aws/
+.kube/config
 
 **/.*.github
 
@@ -59,12 +67,11 @@ jacoco.exec
 .cache/
 .vscode-server/
 
-/reportes/
-**/reportes/**
-**/reportes/**/*
-**/reportes/**/**/*
-**/reportes/**/**/**/*
-**/reportes/**/**/**/**/*
+# Reportes - ignore all except docker-compose files
+/reportes/*
+!/reportes/*/docker-compose*.yml
+!/reportes/*/docker-compose*.yaml
+!/reportes/.gitkeep
 
 **/target/**
 **/target/**/*
